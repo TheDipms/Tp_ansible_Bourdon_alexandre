@@ -1,0 +1,7 @@
+- name: Setup des serveurs
+  hosts: webservers
+  become: yes
+
+  roles:
+    - nginx
+    - nodejs  

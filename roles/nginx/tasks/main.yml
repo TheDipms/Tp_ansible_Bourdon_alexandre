@@ -1,0 +1,32 @@
+  - name: Install nginx
+    apt:
+      name: nginx
+      state: present
+
+  - name: Démarrer Nginx
+    service:
+      name: nginx
+      state: started
+      enabled: yes
+
+  - name: Création du répertoire du site
+    file:
+      path: /var/www/html
+      state: directory
+      mode: "0755"
+
+  - name: Déploiement de la page d'accueil
+    copy:
+      content: |
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Bienvenue sur {{ ansible_facts['hostname'] }}</title>
+        </head>
+        <body>
+          <h1>Bienvenue sur {{ ansible_facts['hostname'] }}</h1>
+          <p>Cette page a été déployée avec Ansible.</p>
+        </body>
+        </html>
+      dest: /var/www/html/index.html
+    notify: Restart nginx

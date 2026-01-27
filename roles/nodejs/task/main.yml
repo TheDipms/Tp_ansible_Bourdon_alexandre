@@ -1,0 +1,19 @@
+- name: Mettre à jour le cache APT
+  apt:
+    update_cache: yes
+
+- name: Installer Node.js et npm
+  apt:
+    name:
+      - nodejs
+      - npm
+    state: present
+
+- name: Vérifier la version de Node.js
+  command: node --version
+  register: node_version
+  changed_when: false
+
+- name: Afficher la version de Node.js
+  debug:
+    msg: "Node.js installé : {{ node_version.stdout }}"
