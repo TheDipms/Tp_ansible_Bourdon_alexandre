@@ -1,0 +1,27 @@
+- name: Mettre à jour le cache APT
+  apt:
+    update_cache: yes
+
+- name: Installer PostgreSQL et les dépendances
+  apt:
+    name:
+      - postgresql
+      - postgresql-contrib
+      - python3-psycopg2
+    state: present
+
+- name: Démarrer PostgreSQL
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Vérifier que PostgreSQL répond
+  command: pg_isready
+  register: postgres_status
+  changed_when: false
+  failed_when: postgres_status.rc != 0
+
+- name: Afficher le statut PostgreSQL
+  debug:
+    msg: "PostgreSQL est opérationnel"
