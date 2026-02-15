@@ -3,7 +3,7 @@ db_name: mon_app_db
 
 # Identifiants de l'utilisateur
 db_user: admin_user
-db_password: "password_provisoire"  # 
+db_password: "{{ vault_db_password }}" # 
 
 # Configuration réseau (optionnel pour l'instant)
 db_port: 5432

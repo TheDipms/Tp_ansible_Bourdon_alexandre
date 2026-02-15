@@ -1,0 +1,15 @@
+# Handlers pour le rôle PostgreSQL
+
+- name: restart postgresql
+  service:
+    name: postgresql
+    state: restarted
+  # Cette ligne est utile si tu travailles dans des conteneurs Docker
+  # car parfois le module service ne trouve pas systemd
+  ignore_errors: yes 
+
+- name: reload postgresql
+  service:
+    name: postgresql
+    state: reloaded
+  ignore_errors: yes

@@ -1,6 +1,6 @@
 [Unit]
 Description=Mon API Node.js
-After=network.target postgresql.service
+After=network.target
 
 [Service]
 Type=simple
@@ -8,12 +8,15 @@ User={{ ansible_user }}
 WorkingDirectory={{ app_directory }}
 ExecStart=/usr/bin/node index.js
 Restart=always
-# On passe les infos de la DB via des variables d'environnement
+
+# --- Variables d'environnement ---
 Environment=PORT={{ app_port }}
-Environment=DB_HOST=localhost
+# On pointe vers le serveur de base de données (db1)
+Environment=DB_HOST=db1
 Environment=DB_NAME={{ db_name }}
 Environment=DB_USER={{ db_user }}
-Environment=DB_PASS={{ db_password }}
+# On utilise le secret déchiffré
+Environment=DB_PASS={{ vault_db_password }}
 
 [Install]
 WantedBy=multi-user.target
