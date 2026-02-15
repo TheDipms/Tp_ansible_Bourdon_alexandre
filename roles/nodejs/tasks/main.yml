@@ -38,21 +38,28 @@
   copy:
     src: "files/"
     dest: "{{ app_directory }}/"
-    force: yes  # Force l'écrasement même si le fichier existe déjà
+    force: yes  # Oblige Ansible à remplacer le fichier vide par le nouveau
+    mode: '0644'
 
 - name: Installer les dépendances (npm install)
   npm:
     path: "{{ app_directory }}"
     executable: "/usr/bin/npm"
 
-- name: Vérifier si l'app tourne déjà avec PM2
+- name: Vérifier si l'app est déjà enregistrée dans PM2
   shell: "pm2 show my-api"
   register: pm2_check
   ignore_errors: yes
   changed_when: false
 
-- name: Démarrer l'application avec PM2
-  shell: "pm2 start server.js --name my-api"
+- name: Démarrer l'application (si première fois)
+  shell: "pm2 start app.js --name my-api"
   args:
     chdir: "{{ app_directory }}"
   when: pm2_check.rc != 0
+
+- name: Redémarrer l'application (si déjà existante)
+  shell: "pm2 reload my-api"
+  args:
+    chdir: "{{ app_directory }}"
+  when: pm2_check.rc == 0
