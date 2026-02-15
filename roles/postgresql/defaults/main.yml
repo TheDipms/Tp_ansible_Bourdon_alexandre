@@ -1,0 +1,9 @@
+# Nom de la base de données
+db_name: mon_app_db
+
+# Identifiants de l'utilisateur
+db_user: admin_user
+db_password: "secure_password_123"  # Toujours mettre le mot de passe entre guillemets
+
+# Configuration réseau (optionnel pour l'instant)
+db_port: 5432

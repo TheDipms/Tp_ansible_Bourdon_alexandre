@@ -9,6 +9,7 @@
       - postgresql-contrib
       - python3-psycopg2
     state: present
+    update_cache: yes
 
 - name: Démarrer PostgreSQL
   service:
@@ -25,3 +26,18 @@
 - name: Afficher le statut PostgreSQL
   debug:
     msg: "PostgreSQL est opérationnel"
+
+- name: Créer la base de données
+  postgresql_db:
+    name: "{{ db_name }}"
+  become: yes
+  become_user: postgres
+
+- name: Créer l'utilisateur et lui donner les droits
+  postgresql_user:
+    db: "{{ db_name }}"
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    priv: "ALL"
+  become: yes
+  become_user: postgres
