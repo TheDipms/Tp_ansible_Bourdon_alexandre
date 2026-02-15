@@ -54,3 +54,38 @@
     path: /etc/postgresql/14/main/pg_hba.conf    
     line: "host all all 0.0.0.0/0 md5"
   notify: restart postgresql
+
+# 1. On répare l'environnement
+- name: S'assurer que les libs Python sont là
+  become: true
+  ansible.builtin.package:
+    name: python3-requests
+    state: present
+
+# 2. On lance la commande SQL (via docker exec pour éviter les soucis de mot de passe réseau)
+- name: S'assurer que Docker est installé sur db1
+  become: true
+  ansible.builtin.package:
+    name: docker.io  # Ou 'docker-ce' selon ta distrib
+    state: present
+  when: inventory_hostname == 'db1'
+
+- name: Vérifier où se trouve docker
+  ansible.builtin.command: which docker
+  register: docker_path
+  when: inventory_hostname == 'db1'
+
+- name: Créer la table dans PostgreSQL
+  community.postgresql.postgresql_query:
+    db: postgres      # Remplace par le nom de la base que tu as créée
+    login_user: "postgres"
+    # Pas besoin de login_host si on est déjà sur la machine
+    query: |
+      CREATE TABLE IF NOT EXISTS utilisateurs (
+          id SERIAL PRIMARY KEY,
+          nom VARCHAR(100),
+          email VARCHAR(100) UNIQUE NOT NULL
+      )
+  become: true
+  become_user: postgres     # Très important : on exécute la commande en tant qu'utilisateur postgres
+  when: inventory_hostname == 'db1'
