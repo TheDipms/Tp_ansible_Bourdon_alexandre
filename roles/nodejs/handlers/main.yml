@@ -1,0 +1,3 @@
+# Remplace ton ancien handler "Restart API" par celui-ci
+- name: Restart API
+  shell: "pm2 restart my-api"

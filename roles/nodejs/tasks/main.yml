@@ -1,0 +1,58 @@
+---
+- name: S'assurer que les outils de base sont là
+  apt:
+    name: [curl, gnupg, ca-certificates, git]
+    state: present
+    update_cache: yes
+
+- name: Ajouter le dépôt NodeSource (Script setup)
+  shell: "curl -fsSL https://deb.nodesource.com/setup_{{ node_version }} | bash -"
+  # On ne met pas de "creates" cette fois pour forcer la réparation si besoin
+
+- name: Installer Node.js (Force le paquet NodeSource)
+  apt:
+    name: nodejs
+    state: latest # 'latest' est crucial pour écraser une vieille version potentielle
+    update_cache: yes
+
+- name: Vérifier la présence de npm (Debug)
+  shell: "which npm"
+  register: npm_path
+  changed_when: false
+
+- name: Installer PM2 globalement
+  npm:
+    name: pm2
+    global: yes
+    # On utilise le chemin trouvé par 'which npm' ou le chemin standard
+    executable: "{{ npm_path.stdout | default('/usr/bin/npm') }}"
+
+# ... (Gardez l'installation de Node.js et PM2 comme avant)
+- name: Créer le répertoire de l'application
+  file:
+    path: "{{ app_directory }}"
+    state: directory
+    mode: '0755'
+
+- name: Transférer les fichiers de l'API
+  copy:
+    src: "files/"
+    dest: "{{ app_directory }}/"
+    force: yes  # Force l'écrasement même si le fichier existe déjà
+
+- name: Installer les dépendances (npm install)
+  npm:
+    path: "{{ app_directory }}"
+    executable: "/usr/bin/npm"
+
+- name: Vérifier si l'app tourne déjà avec PM2
+  shell: "pm2 show my-api"
+  register: pm2_check
+  ignore_errors: yes
+  changed_when: false
+
+- name: Démarrer l'application avec PM2
+  shell: "pm2 start server.js --name my-api"
+  args:
+    chdir: "{{ app_directory }}"
+  when: pm2_check.rc != 0

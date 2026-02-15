@@ -1,0 +1,6 @@
+# test_db.yml
+- name: Test du rôle NodeJS
+  hosts: all      # Ou le nom de ton groupe de serveurs DB dans l'inventaire
+  become: yes
+  roles:
+    - nodejs

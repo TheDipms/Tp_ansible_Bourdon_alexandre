@@ -1,3 +1,8 @@
+app_directory: /var/www/my_api
+app_repo: "https://github.com/TheDipms/Tp_ansible_Bourdon_alexandre.git" 
+app_port: 3000
+node_version: "20.x"
+#partie db 
 # Nom de la base de données
 db_name: mon_app_db
 
